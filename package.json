@@ -3,12 +3,11 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Production-ready L.A.B.S. website with Supabase lead management, notifications, and admin dashboard.",
+  "description": "Production-ready L.A.B.S. website",
   "scripts": {
     "build": "echo No build step required",
     "start": "node server/index.mjs",
-    "dev": "node server/index.mjs",
-    "check": "node --check server/index.mjs && node --check api/index.mjs && node --check server/app.mjs"
+    "dev": "node server/index.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",
@@ -21,9 +20,5 @@
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.14",
     "xlsx": "^0.18.5"
-  },
-  "devDependencies": {},
-  "engines": {
-    "node": ">=20.0.0"
   }
 }
