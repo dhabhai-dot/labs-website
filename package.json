@@ -1,0 +1,29 @@
+﻿{
+  "name": "labs-company-website",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Production-ready L.A.B.S. website with Supabase lead management, notifications, and admin dashboard.",
+  "scripts": {
+    "build": "echo \"No build step required\"",
+    "start": "node server/index.mjs",
+    "dev": "node server/index.mjs",
+    "check": "node --check server/index.mjs && node --check api/index.mjs && node --check server/app.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.14",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

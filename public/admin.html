@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>L.A.B.S. Admin | Leads</title>
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <main class="admin-shell">
+      <section class="login-panel" id="loginPanel">
+        <div>
+          <p class="eyebrow">L.A.B.S. Admin</p>
+          <h1>Lead Management</h1>
+        </div>
+        <form id="loginForm" class="login-form">
+          <label><span>Username</span><input name="username" autocomplete="username" required /></label>
+          <label><span>Password</span><input name="password" type="password" autocomplete="current-password" required /></label>
+          <button type="submit">Login</button>
+          <p class="status" id="loginStatus" role="status"></p>
+        </form>
+      </section>
+
+      <section class="dashboard hidden" id="dashboard">
+        <header class="admin-header">
+          <div>
+            <p class="eyebrow">L.A.B.S.</p>
+            <h1>Leads</h1>
+          </div>
+          <button class="ghost" id="logoutButton" type="button">Logout</button>
+        </header>
+
+        <section class="stats-grid" id="statsGrid">
+          <article><span>Total Leads</span><strong id="totalLeads">0</strong></article>
+          <article><span>Today's Leads</span><strong id="todayLeads">0</strong></article>
+          <article><span>This Month</span><strong id="monthLeads">0</strong></article>
+          <article><span>Closed</span><strong id="closedLeads">0</strong></article>
+        </section>
+
+        <section class="toolbar">
+          <input id="searchInput" type="search" placeholder="Search leads" />
+          <input id="fromDate" type="date" />
+          <input id="toDate" type="date" />
+          <select id="statusFilter"><option value="">All statuses</option><option value="new">New</option><option value="contacted">Contacted</option><option value="closed">Closed</option></select>
+          <button id="filterButton" type="button">Apply</button>
+          <a id="csvExport" class="export" href="/api/admin/export.csv">CSV</a>
+          <a id="excelExport" class="export" href="/api/admin/export.xlsx">Excel</a>
+        </section>
+
+        <section class="table-wrap">
+          <table>
+            <thead><tr><th>Lead</th><th>Service</th><th>Message</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="leadRows"></tbody>
+          </table>
+        </section>
+        <p class="status" id="dashboardStatus" role="status"></p>
+      </section>
+    </main>
+    <script src="admin.js"></script>
+  </body>
+</html>
