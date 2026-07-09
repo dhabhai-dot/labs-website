@@ -77,7 +77,7 @@ function renderLeads(leads) {
   leadRows.innerHTML = leads.map((lead) => `
     <tr>
       <td><div class="lead-name">${escapeHtml(lead.full_name)}</div><div class="lead-meta">${escapeHtml(lead.company_name)}<br>${escapeHtml(lead.email)}<br>${escapeHtml(lead.phone)}</div></td>
-      <td>${escapeHtml(lead.service_required)}<br><span class="lead-meta">${escapeHtml(lead.budget || "No budget")}</span></td>
+      <td>${escapeHtml(lead.service_required)}<br><span class="lead-meta">${escapeHtml(lead.budget || "No budget")} / ${escapeHtml(lead.timeline || "No timeline")}</span></td>
       <td>${escapeHtml(lead.message)}</td>
       <td>${formatDate(lead.submitted_at)}<br><span class="lead-meta">${escapeHtml(lead.country || "Country unavailable")}</span></td>
       <td><span class="badge">${escapeHtml(lead.status)}</span></td>

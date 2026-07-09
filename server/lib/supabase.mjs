@@ -1,4 +1,4 @@
-﻿import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 
 let client;
 
@@ -22,6 +22,7 @@ export async function createLead(config, lead) {
       phone: lead.phone,
       service_required: lead.serviceRequired,
       budget: lead.budget || null,
+      timeline: lead.timeline || null,
       message: lead.message,
       submitted_at: lead.submittedAt,
       visitor_ip: lead.visitorIp,
@@ -52,7 +53,7 @@ export async function listLeads(config, filters) {
   if (filters.toDate) query = query.lte("submitted_at", `${filters.toDate}T23:59:59.999Z`);
   if (filters.search) {
     const safeSearch = String(filters.search).replace(/[%,]/g, "");
-    query = query.or(`full_name.ilike.%${safeSearch}%,company_name.ilike.%${safeSearch}%,email.ilike.%${safeSearch}%,phone.ilike.%${safeSearch}%,service_required.ilike.%${safeSearch}%`);
+    query = query.or(`full_name.ilike.%${safeSearch}%,company_name.ilike.%${safeSearch}%,email.ilike.%${safeSearch}%,phone.ilike.%${safeSearch}%,service_required.ilike.%${safeSearch}%,timeline.ilike.%${safeSearch}%`);
   }
 
   const { data, error, count } = await query;

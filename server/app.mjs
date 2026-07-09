@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { getConfig, requireConfig } from "./lib/config.mjs";
+import { getConfig, hasConfig, requireConfig } from "./lib/config.mjs";
 import { validateLeadPayload, validateStatus, cleanString } from "./lib/validation.mjs";
 import { verifyRecaptcha } from "./lib/recaptcha.mjs";
 import { createLead, deleteLead, getLeadStats, listAllLeads, listLeads, updateLeadStatus } from "./lib/supabase.mjs";
@@ -65,14 +65,21 @@ export function createApp() {
   });
 
   app.post("/api/contact", contactLimiter, asyncHandler(async (request, response) => {
-    requireConfig(["database", "recaptcha", "email", "whatsapp"]);
     if (!request.body.country && request.headers["x-vercel-ip-country"]) request.body.country = request.headers["x-vercel-ip-country"];
     const validation = validateLeadPayload(request.body);
     if (!validation.ok) return response.status(400).json({ ok: false, error: "Please check the form and try again.", fields: validation.fields });
 
+    requireConfig(["database", "email"]);
+
     const visitorIp = getClientIp(request);
     const browser = cleanString(request.headers["user-agent"], 500);
-    const recaptchaScore = await verifyRecaptcha(config, validation.value.recaptchaToken, visitorIp);
+    let recaptchaScore = null;
+    if (hasConfig(config, "recaptcha")) {
+      if (!validation.value.recaptchaToken) {
+        return response.status(400).json({ ok: false, error: "Please retry the form verification.", fields: { recaptchaToken: "reCAPTCHA verification is required." } });
+      }
+      recaptchaScore = await verifyRecaptcha(config, validation.value.recaptchaToken, visitorIp);
+    }
 
     const lead = await createLead(config, {
       ...validation.value,
@@ -82,7 +89,9 @@ export function createApp() {
       recaptchaScore
     });
 
-    const notificationResults = await Promise.allSettled([sendLeadEmail(config, lead), sendWhatsAppLead(config, lead)]);
+    const notifications = [sendLeadEmail(config, lead)];
+    if (hasConfig(config, "whatsapp")) notifications.push(sendWhatsAppLead(config, lead));
+    const notificationResults = await Promise.allSettled(notifications);
     for (const result of notificationResults) {
       if (result.status === "rejected") console.error("Lead notification failed", result.reason);
     }
@@ -191,5 +200,3 @@ function exportFilters(request) {
   const status = request.query.status ? validateStatus(request.query.status) : null;
   return { fromDate: cleanDate(request.query.from), toDate: cleanDate(request.query.to), status };
 }
-
-

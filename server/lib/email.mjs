@@ -1,4 +1,4 @@
-﻿import nodemailer from "nodemailer";
+import nodemailer from "nodemailer";
 import { escapeHtml } from "./validation.mjs";
 
 let transporter;
@@ -16,7 +16,7 @@ export async function sendLeadEmail(config, lead) {
   await transporter.sendMail({
     from: config.businessEmailFrom,
     to: config.businessEmailTo,
-    subject: "🚀 New Lead - L.A.B.S. Website",
+    subject: "New Lead - L.A.B.S. Website",
     html: renderLeadEmail(lead)
   });
 }
@@ -29,7 +29,8 @@ function renderLeadEmail(lead) {
     ["Phone", lead.phone],
     ["Service", lead.service_required],
     ["Budget", lead.budget || "Not specified"],
-    ["Message", lead.message],
+    ["Timeline", lead.timeline || "Not specified"],
+    ["Project Description", lead.message],
     ["Date & Time", formatDate(lead.submitted_at)]
   ];
 
@@ -39,7 +40,7 @@ function renderLeadEmail(lead) {
       <body style="margin:0;background:#f4f7f2;font-family:Arial,sans-serif;color:#111;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:32px 16px;background:#f4f7f2;">
           <tr><td align="center">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:680px;background:#ffffff;border:1px solid #dfe6da;border-radius:18px;overflow:hidden;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:680px;background:#ffffff;border:1px solid #dfe6da;border-radius:8px;overflow:hidden;">
               <tr><td style="padding:28px 32px;background:#111;color:#fff;">
                 <p style="margin:0 0 8px;color:#62b531;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;">L.A.B.S. Website</p>
                 <h1 style="margin:0;font-size:28px;line-height:1.2;">New qualified lead received</h1>

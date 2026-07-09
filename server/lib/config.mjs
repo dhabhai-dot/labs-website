@@ -1,8 +1,8 @@
-﻿export const configGroups = {
+export const configGroups = {
   database: ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"],
   admin: ["ADMIN_USERNAME", "ADMIN_PASSWORD_HASH", "JWT_SECRET"],
   recaptcha: ["RECAPTCHA_SECRET_KEY"],
-  email: ["SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS", "BUSINESS_EMAIL_TO", "BUSINESS_EMAIL_FROM"],
+  email: ["SMTP_HOST", "SMTP_USER", "SMTP_PASS"],
   whatsapp: ["WHATSAPP_ACCESS_TOKEN", "WHATSAPP_PHONE_NUMBER_ID", "WHATSAPP_TO_NUMBER"]
 };
 
@@ -27,8 +27,8 @@ export function getConfig() {
       user: process.env.SMTP_USER || "",
       pass: process.env.SMTP_PASS || ""
     },
-    businessEmailTo: process.env.BUSINESS_EMAIL_TO || "",
-    businessEmailFrom: process.env.BUSINESS_EMAIL_FROM || "",
+    businessEmailTo: process.env.BUSINESS_EMAIL_TO || process.env.CONTACT_TO || "",
+    businessEmailFrom: process.env.BUSINESS_EMAIL_FROM || process.env.CONTACT_FROM || process.env.SMTP_USER || "",
     whatsapp: {
       accessToken: process.env.WHATSAPP_ACCESS_TOKEN || "",
       phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || "",
@@ -43,12 +43,24 @@ export function getConfig() {
 }
 
 export function requireConfig(groups) {
+  const config = getConfig();
   const missing = groups.flatMap((group) => configGroups[group] || []).filter((key) => !process.env[key]);
+  if (groups.includes("email")) {
+    if (!config.businessEmailTo) missing.push("BUSINESS_EMAIL_TO or CONTACT_TO");
+    if (!config.businessEmailFrom) missing.push("BUSINESS_EMAIL_FROM, CONTACT_FROM, or SMTP_USER");
+  }
   if (missing.length > 0) {
     const error = new Error(`Server configuration incomplete: ${missing.join(", ")}`);
     error.statusCode = 503;
     throw error;
   }
+}
+
+export function hasConfig(config, group) {
+  if (group === "email") return Boolean(config.smtp.host && config.smtp.user && config.smtp.pass && config.businessEmailTo && config.businessEmailFrom);
+  if (group === "recaptcha") return Boolean(config.recaptchaSecretKey);
+  if (group === "whatsapp") return Boolean(config.whatsapp.accessToken && config.whatsapp.phoneNumberId && config.whatsapp.toNumber);
+  return (configGroups[group] || []).every((key) => Boolean(process.env[key]));
 }
 
 function splitList(value) {

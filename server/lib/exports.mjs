@@ -1,4 +1,4 @@
-﻿import xlsx from "xlsx";
+import xlsx from "xlsx";
 
 const headers = [
   ["submitted_at", "Submitted"],
@@ -8,6 +8,7 @@ const headers = [
   ["phone", "Phone"],
   ["service_required", "Service"],
   ["budget", "Budget"],
+  ["timeline", "Timeline"],
   ["message", "Message"],
   ["status", "Status"],
   ["visitor_ip", "Visitor IP"],

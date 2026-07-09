@@ -1,6 +1,6 @@
-﻿export async function sendWhatsAppLead(config, lead) {
+export async function sendWhatsAppLead(config, lead) {
   const message = [
-    "🚀 NEW WEBSITE LEAD",
+    "NEW WEBSITE LEAD",
     "",
     `Name: ${lead.full_name}`,
     `Company: ${lead.company_name}`,
@@ -8,7 +8,8 @@
     `Phone: ${lead.phone}`,
     `Service: ${lead.service_required}`,
     `Budget: ${lead.budget || "Not specified"}`,
-    `Message: ${lead.message}`,
+    `Timeline: ${lead.timeline || "Not specified"}`,
+    `Project Description: ${lead.message}`,
     "",
     `Submitted: ${formatDate(lead.submitted_at)}`
   ].join("\n");

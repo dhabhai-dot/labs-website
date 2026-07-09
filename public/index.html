@@ -14,7 +14,8 @@
     <div class="cursor-glow" aria-hidden="true"></div>
     <header class="site-header">
       <a class="brand" href="#top" aria-label="L.A.B.S. home"><img src="assets/labs-logo-nav.png" alt="L.A.B.S. logo" /></a>
-      <nav class="nav-links" aria-label="Primary navigation">
+      <button class="menu-toggle" type="button" aria-controls="primaryNav" aria-expanded="false" aria-label="Open menu"><span></span><span></span><span></span></button>
+      <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
         <a href="#services">Services</a><a href="#products">Products</a><a href="#portfolio">Portfolio</a><a href="#about">About</a><a href="#contact">Contact</a>
       </nav>
       <a class="nav-cta" href="#contact">Book Meeting</a>
@@ -38,7 +39,7 @@
         </div>
       </section>
       <section class="trusted section-shell reveal">
-        <div><p class="stars">★★★★★</p><h2>Trusted by startups, SMEs and enterprises.</h2></div>
+        <div><p class="stars">5/5</p><h2>Trusted by startups, SMEs and enterprises.</h2></div>
         <div class="logo-row" aria-label="Representative client industries"><span>Logistics</span><span>Manufacturing</span><span>Healthcare</span><span>Education</span><span>Finance</span></div>
       </section>
       <section class="services section-shell" id="services">
@@ -53,8 +54,8 @@
       <section class="products section-shell" id="products">
         <div class="section-heading reveal"><p class="eyebrow">Products</p><h2>Focused products for teams that need clarity, control, and speed.</h2></div>
         <div class="product-grid">
-          <article class="product-card reveal"><p class="product-kicker">TaxceedPro</p><h3>Payroll, attendance and HRMS in one command center.</h3><ul><li>Payroll Management</li><li>Attendance</li><li>HRMS</li></ul><a href="#contact">Learn More <span>→</span></a></article>
-          <article class="product-card dark reveal"><p class="product-kicker">Fleet Fuel Pro</p><h3>Fleet management with fuel, maintenance and GPS visibility.</h3><ul><li>Fleet Management</li><li>Fuel</li><li>Maintenance</li><li>GPS</li></ul><a href="#contact">Learn More <span>→</span></a></article>
+          <article class="product-card reveal"><p class="product-kicker">TaxceedPro</p><h3>Payroll, attendance and HRMS in one command center.</h3><ul><li>Payroll Management</li><li>Attendance</li><li>HRMS</li></ul><a href="#contact">Learn More <span>-&gt;</span></a></article>
+          <article class="product-card dark reveal"><p class="product-kicker">Fleet Fuel Pro</p><h3>Fleet management with fuel, maintenance and GPS visibility.</h3><ul><li>Fleet Management</li><li>Fuel</li><li>Maintenance</li><li>GPS</li></ul><a href="#contact">Learn More <span>-&gt;</span></a></article>
         </div>
       </section>
       <section class="process section-shell" id="portfolio">
@@ -71,15 +72,20 @@
       </section>
       <section class="contact section-shell" id="contact">
         <div class="contact-copy reveal"><p class="eyebrow">Contact</p><h2>Let's build the system your business has been waiting for.</h2><p>Tell us what you need to improve, automate, or launch. We'll help shape it into a practical software roadmap.</p></div>
-        <form class="contact-form reveal" novalidate><label><span>Name</span><input type="text" name="name" autocomplete="name" required minlength="2" maxlength="120" /></label><label><span>Email</span><input type="email" name="email" autocomplete="email" required maxlength="254" /></label><label><span>Project</span><textarea name="project" rows="4" required minlength="10" maxlength="4000"></textarea></label><label class="hidden-field" aria-hidden="true" tabindex="-1"><span>Company Website</span><input type="text" name="companyWebsite" autocomplete="off" tabindex="-1" /></label><div class="form-row"><label><span>Budget</span><select name="budget"><option>To be discussed</option><option>Under Rs. 2L</option><option>Rs. 2L - Rs. 5L</option><option>Rs. 5L+</option></select></label><label><span>Timeline</span><select name="timeline"><option>Flexible</option><option>1-2 months</option><option>3-6 months</option><option>6+ months</option></select></label></div><button class="button primary" type="submit">Send</button></form>
+        <form class="contact-form reveal" novalidate>
+  <label><span>Full Name</span><input type="text" name="fullName" autocomplete="name" required minlength="2" maxlength="120" /></label>
+  <label><span>Mobile Number</span><input type="tel" name="phone" autocomplete="tel" inputmode="tel" required minlength="7" maxlength="24" pattern="^[+()0-9\s-]{7,24}$" /></label>
+  <label><span>Email Address</span><input type="email" name="email" autocomplete="email" required maxlength="254" /></label>
+  <label><span>Company Name</span><input type="text" name="companyName" autocomplete="organization" required minlength="2" maxlength="160" /></label>
+  <label><span>Service Required</span><select name="serviceRequired" required><option value="">Select a service</option><option>Custom Software</option><option>Web Development</option><option>Mobile App</option><option>Automation & Cloud</option><option>HRMS / Payroll</option><option>Fleet Management</option></select></label>
+  <label><span>Project Description</span><textarea name="message" rows="5" required minlength="10" maxlength="4000"></textarea></label>
+  <label class="hidden-field" aria-hidden="true" tabindex="-1"><span>Company Website</span><input type="text" name="companyWebsite" autocomplete="off" tabindex="-1" /></label>
+  <div class="form-row"><label><span>Budget</span><select name="budget" required><option value="">Select budget</option><option>To be discussed</option><option>Under Rs. 2L</option><option>Rs. 2L - Rs. 5L</option><option>Rs. 5L+</option></select></label><label><span>Timeline</span><select name="timeline" required><option value="">Select timeline</option><option>Flexible</option><option>1-2 months</option><option>3-6 months</option><option>6+ months</option></select></label></div>
+  <button class="button primary" type="submit">Send</button>
+</form>
       </section>
     </main>
     <footer class="site-footer"><div><img src="assets/labs-logo.png" alt="L.A.B.S. logo" /><p>Leading Advanced Business Solutions</p></div><nav aria-label="Footer services"><a href="#services">Custom Software</a><a href="#services">Mobile Apps</a><a href="#services">Automation</a><a href="#services">Cloud</a></nav><address>Jaipur, Rajasthan</address><div class="social-links"><a href="#">LinkedIn</a><a href="#">GitHub</a><a href="#">Instagram</a></div></footer>
     <script src="script.js"></script>
   </body>
 </html>
-
-
-
-
-

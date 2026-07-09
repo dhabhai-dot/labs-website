@@ -1,4 +1,4 @@
-﻿const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phonePattern = /^[+()\d\s-]{7,24}$/;
 const allowedStatuses = new Set(["new", "contacted", "closed"]);
 
@@ -11,6 +11,7 @@ export function validateLeadPayload(payload) {
     phone: cleanString(payload?.phone, 32),
     serviceRequired: cleanString(payload?.serviceRequired, 160),
     budget: cleanString(payload?.budget, 120),
+    timeline: cleanString(payload?.timeline, 120),
     message: cleanString(payload?.message ?? payload?.project, 4000),
     country: cleanString(payload?.country, 120),
     recaptchaToken: cleanString(payload?.recaptchaToken, 4000),
@@ -23,8 +24,9 @@ export function validateLeadPayload(payload) {
   if (!emailPattern.test(value.email)) fields.email = "Valid email address is required.";
   if (!phonePattern.test(value.phone)) fields.phone = "Valid phone number is required.";
   if (value.serviceRequired.length < 2) fields.serviceRequired = "Select the service required.";
+  if (value.budget.length < 2) fields.budget = "Budget is required.";
+  if (value.timeline.length < 2) fields.timeline = "Timeline is required.";
   if (value.message.length < 10) fields.message = "Message must be at least 10 characters.";
-  if (!value.recaptchaToken) fields.recaptchaToken = "reCAPTCHA verification is required.";
 
   return Object.keys(fields).length ? { ok: false, fields } : { ok: true, value };
 }
