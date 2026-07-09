@@ -1,4 +1,4 @@
-﻿import express from "express";
+import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -41,13 +41,18 @@ export function createApp() {
     crossOriginEmbedderPolicy: false
   }));
 
-  app.use(cors({
+  const corsOptions = {
     origin(origin, callback) {
-      if (!origin || config.corsOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error("CORS origin blocked."));
+      return callback(null, isAllowedOrigin(config, origin));
     },
-    credentials: true
-  }));
+    credentials: true,
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 204
+  };
+
+  app.use(cors(corsOptions));
+  app.options("*", cors(corsOptions), (request, response) => response.sendStatus(204));
 
   app.use(express.json({ limit: config.maxBodyBytes }));
   app.use(cookieParser());
@@ -69,7 +74,7 @@ export function createApp() {
     const validation = validateLeadPayload(request.body);
     if (!validation.ok) return response.status(400).json({ ok: false, error: "Please check the form and try again.", fields: validation.fields });
 
-    requireConfig(["database", "email"]);
+    requireConfig(["database"]);
 
     const visitorIp = getClientIp(request);
     const browser = cleanString(request.headers["user-agent"], 500);
@@ -96,7 +101,7 @@ export function createApp() {
       if (result.status === "rejected") console.error("Lead notification failed", result.reason);
     }
 
-    response.status(201).json({ ok: true, message: "Thanks. Your project request has been received.", id: lead.id });
+    response.status(200).json({ ok: true, message: "Thanks. Your project request has been received.", id: lead.id });
   }));
 
   app.use("/api/admin", (request, response, next) => {
@@ -136,6 +141,7 @@ export function createApp() {
       fromDate: cleanDate(request.query.from),
       toDate: cleanDate(request.query.to),
       status,
+      isRead: cleanBoolean(request.query.read),
       page: request.query.page,
       pageSize: request.query.pageSize
     });
@@ -143,9 +149,11 @@ export function createApp() {
   }));
 
   app.patch("/api/admin/leads/:id", adminLimiter, adminOnly, asyncHandler(async (request, response) => {
-    const status = validateStatus(request.body?.status);
-    if (!status) return response.status(400).json({ ok: false, error: "Invalid status." });
-    response.json({ ok: true, lead: await updateLeadStatus(config, request.params.id, status) });
+    const status = request.body?.status === undefined ? undefined : validateStatus(request.body?.status);
+    const isRead = request.body?.isRead === undefined ? undefined : Boolean(request.body.isRead);
+    if (request.body?.status !== undefined && !status) return response.status(400).json({ ok: false, error: "Invalid status." });
+    if (status === undefined && isRead === undefined) return response.status(400).json({ ok: false, error: "No lead update provided." });
+    response.json({ ok: true, lead: await updateLeadStatus(config, request.params.id, { status, isRead }) });
   }));
 
   app.delete("/api/admin/leads/:id", adminLimiter, adminOnly, asyncHandler(async (request, response) => {
@@ -181,6 +189,25 @@ export function createApp() {
   return app;
 }
 
+function isAllowedOrigin(config, origin) {
+  if (!origin) return true;
+
+  try {
+    const url = new URL(origin);
+    const hostname = url.hostname.toLowerCase();
+    const protocol = url.protocol;
+
+    if (protocol === "https:" && (hostname === "labs.in" || hostname === "www.labs.in")) return true;
+    if (protocol === "https:" && hostname.endsWith(".vercel.app")) return true;
+    if (protocol === "http:" && hostname === "localhost" && ["3000", "5173", "4173"].includes(url.port)) return true;
+    if (config.corsOrigins.includes(origin)) return true;
+  } catch {
+    return false;
+  }
+
+  return false;
+}
+
 function asyncHandler(handler) {
   return (request, response, next) => Promise.resolve(handler(request, response, next)).catch(next);
 }
@@ -196,7 +223,14 @@ function cleanDate(value) {
   return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : "";
 }
 
+function cleanBoolean(value) {
+  const text = cleanString(value, 12).toLowerCase();
+  if (["true", "1", "read"].includes(text)) return true;
+  if (["false", "0", "unread"].includes(text)) return false;
+  return null;
+}
+
 function exportFilters(request) {
   const status = request.query.status ? validateStatus(request.query.status) : null;
-  return { fromDate: cleanDate(request.query.from), toDate: cleanDate(request.query.to), status };
+  return { fromDate: cleanDate(request.query.from), toDate: cleanDate(request.query.to), status, isRead: cleanBoolean(request.query.read) };
 }

@@ -1,4 +1,4 @@
-﻿const loginPanel = document.querySelector("#loginPanel");
+const loginPanel = document.querySelector("#loginPanel");
 const dashboard = document.querySelector("#dashboard");
 const loginForm = document.querySelector("#loginForm");
 const loginStatus = document.querySelector("#loginStatus");
@@ -8,7 +8,8 @@ const filters = {
   search: document.querySelector("#searchInput"),
   from: document.querySelector("#fromDate"),
   to: document.querySelector("#toDate"),
-  status: document.querySelector("#statusFilter")
+  status: document.querySelector("#statusFilter"),
+  read: document.querySelector("#readFilter")
 };
 
 init();
@@ -54,7 +55,7 @@ async function loadStats() {
   document.querySelector("#totalLeads").textContent = result.stats.total;
   document.querySelector("#todayLeads").textContent = result.stats.today;
   document.querySelector("#monthLeads").textContent = result.stats.month;
-  document.querySelector("#closedLeads").textContent = result.stats.closed;
+  document.querySelector("#unreadLeads").textContent = result.stats.unread;
 }
 
 async function loadLeads() {
@@ -79,11 +80,12 @@ function renderLeads(leads) {
       <td><div class="lead-name">${escapeHtml(lead.full_name)}</div><div class="lead-meta">${escapeHtml(lead.company_name)}<br>${escapeHtml(lead.email)}<br>${escapeHtml(lead.phone)}</div></td>
       <td>${escapeHtml(lead.service_required)}<br><span class="lead-meta">${escapeHtml(lead.budget || "No budget")} / ${escapeHtml(lead.timeline || "No timeline")}</span></td>
       <td>${escapeHtml(lead.message)}</td>
-      <td>${formatDate(lead.submitted_at)}<br><span class="lead-meta">${escapeHtml(lead.country || "Country unavailable")}</span></td>
+      <td>${formatDate(lead.submitted_at)}<br><span class="lead-meta">${escapeHtml(lead.visitor_ip || lead.country || "IP unavailable")}</span></td>
+      <td><span class="badge ${lead.is_read ? "read" : "unread"}">${lead.is_read ? "Read" : "Unread"}</span></td>
       <td><span class="badge">${escapeHtml(lead.status)}</span></td>
-      <td><div class="actions"><button data-action="contacted" data-id="${lead.id}">Contacted</button><button data-action="closed" data-id="${lead.id}">Closed</button><button class="danger" data-action="delete" data-id="${lead.id}">Delete</button></div></td>
+      <td><div class="actions"><button data-action="read" data-id="${lead.id}">${lead.is_read ? "Mark Unread" : "Mark Read"}</button><button data-action="contacted" data-id="${lead.id}">Contacted</button><button data-action="closed" data-id="${lead.id}">Closed</button><button class="danger" data-action="delete" data-id="${lead.id}">Delete</button></div></td>
     </tr>
-  `).join("") || `<tr><td colspan="6">No leads found.</td></tr>`;
+  `).join("") || `<tr><td colspan="7">No enquiries found.</td></tr>`;
 
   leadRows.querySelectorAll("button").forEach((button) => button.addEventListener("click", handleLeadAction));
 }
@@ -94,6 +96,10 @@ async function handleLeadAction(event) {
   if (action === "delete") {
     if (!confirm("Delete this lead permanently?")) return;
     await api(`/api/admin/leads/${id}`, { method: "DELETE" });
+  } else if (action === "read") {
+    const row = event.currentTarget.closest("tr");
+    const isUnread = Boolean(row?.querySelector(".badge.unread"));
+    await api(`/api/admin/leads/${id}`, { method: "PATCH", body: { isRead: isUnread } });
   } else {
     await api(`/api/admin/leads/${id}`, { method: "PATCH", body: { status: action } });
   }
@@ -106,6 +112,7 @@ function buildQuery() {
   if (filters.from.value) params.set("from", filters.from.value);
   if (filters.to.value) params.set("to", filters.to.value);
   if (filters.status.value) params.set("status", filters.status.value);
+  if (filters.read.value) params.set("read", filters.read.value);
   const text = params.toString();
   return text ? `?${text}` : "";
 }

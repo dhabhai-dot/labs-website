@@ -11,6 +11,7 @@ const headers = [
   ["timeline", "Timeline"],
   ["message", "Message"],
   ["status", "Status"],
+  ["is_read", "Read"],
   ["visitor_ip", "Visitor IP"],
   ["browser", "Browser"],
   ["country", "Country"]

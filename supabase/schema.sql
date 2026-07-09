@@ -16,11 +16,13 @@ create table if not exists public.leads (
   country text,
   recaptcha_score numeric(3,2),
   status text not null default 'new' check (status in ('new', 'contacted', 'closed')),
+  is_read boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
 alter table if exists public.leads add column if not exists timeline text;
+alter table if exists public.leads add column if not exists is_read boolean not null default false;
 
 create table if not exists public.lead_events (
   id uuid primary key default gen_random_uuid(),
@@ -32,6 +34,7 @@ create table if not exists public.lead_events (
 
 create index if not exists leads_submitted_at_idx on public.leads (submitted_at desc);
 create index if not exists leads_status_idx on public.leads (status);
+create index if not exists leads_is_read_idx on public.leads (is_read);
 create index if not exists leads_email_idx on public.leads (email);
 create index if not exists leads_timeline_idx on public.leads (timeline);
 create index if not exists lead_events_lead_id_idx on public.lead_events (lead_id);

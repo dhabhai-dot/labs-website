@@ -21,9 +21,9 @@ button.ghost { background: transparent; color: var(--ink); border: 1px solid var
 .stats-grid article { padding: 18px; }
 .stats-grid span { display: block; color: var(--muted); font-size: 13px; font-weight: 800; }
 .stats-grid strong { display: block; margin-top: 8px; font-size: 34px; }
-.toolbar { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr) auto auto auto; gap: 10px; padding: 12px; margin-bottom: 18px; }
+.toolbar { display: grid; grid-template-columns: 1.4fr repeat(4, 1fr) auto auto auto; gap: 10px; padding: 12px; margin-bottom: 18px; }
 .table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; min-width: 920px; }
+table { width: 100%; border-collapse: collapse; min-width: 1040px; }
 th, td { padding: 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
 td { font-size: 14px; line-height: 1.45; }
@@ -33,5 +33,7 @@ td { font-size: 14px; line-height: 1.45; }
 .actions button { min-height: 34px; padding: 0 10px; font-size: 12px; }
 .actions .danger { background: var(--danger); }
 .badge { display: inline-flex; min-height: 28px; align-items: center; padding: 0 10px; border-radius: 999px; background: #edf4e9; color: var(--green-dark); font-weight: 800; font-size: 12px; text-transform: capitalize; }
+.badge.unread { background: #fff3df; color: #9a5a00; }
+.badge.read { background: #eef2f0; color: var(--muted); }
 @media (max-width: 860px) { h1 { font-size: 38px; } .login-panel, .stats-grid, .toolbar { grid-template-columns: 1fr; } .admin-header { align-items: flex-start; flex-direction: column; } }
 @media (max-width: 520px) { .admin-shell { width: calc(100% - 20px); padding: 20px 0; } h1 { font-size: 32px; } th, td { padding: 12px; } }

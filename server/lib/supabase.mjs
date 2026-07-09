@@ -49,6 +49,7 @@ export async function listLeads(config, filters) {
   let query = supabase.from("leads").select("*", { count: "exact" }).order("submitted_at", { ascending: false }).range(from, to);
 
   if (filters.status) query = query.eq("status", filters.status);
+  if (filters.isRead !== null && filters.isRead !== undefined) query = query.eq("is_read", filters.isRead);
   if (filters.fromDate) query = query.gte("submitted_at", `${filters.fromDate}T00:00:00.000Z`);
   if (filters.toDate) query = query.lte("submitted_at", `${filters.toDate}T23:59:59.999Z`);
   if (filters.search) {
@@ -65,6 +66,7 @@ export async function listAllLeads(config, filters = {}) {
   const supabase = getSupabase(config);
   let query = supabase.from("leads").select("*").order("submitted_at", { ascending: false });
   if (filters.status) query = query.eq("status", filters.status);
+  if (filters.isRead !== null && filters.isRead !== undefined) query = query.eq("is_read", filters.isRead);
   if (filters.fromDate) query = query.gte("submitted_at", `${filters.fromDate}T00:00:00.000Z`);
   if (filters.toDate) query = query.lte("submitted_at", `${filters.toDate}T23:59:59.999Z`);
   const { data, error } = await query;
@@ -78,29 +80,42 @@ export async function getLeadStats(config) {
   const todayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString();
   const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
 
-  const [total, today, month, newLeads, contacted, closed] = await Promise.all([
+  const [total, today, month, unread, newLeads, contacted, closed] = await Promise.all([
     countLeads(supabase),
     countLeads(supabase, (query) => query.gte("submitted_at", todayStart)),
     countLeads(supabase, (query) => query.gte("submitted_at", monthStart)),
+    countLeads(supabase, (query) => query.eq("is_read", false)),
     countLeads(supabase, (query) => query.eq("status", "new")),
     countLeads(supabase, (query) => query.eq("status", "contacted")),
     countLeads(supabase, (query) => query.eq("status", "closed"))
   ]);
 
-  return { total, today, month, new: newLeads, contacted, closed };
+  return { total, today, month, unread, new: newLeads, contacted, closed };
 }
 
-export async function updateLeadStatus(config, id, status) {
+export async function updateLeadStatus(config, id, update) {
   const supabase = getSupabase(config);
+  const patch = { updated_at: new Date().toISOString() };
+  const notes = [];
+
+  if (update.status !== undefined) {
+    patch.status = update.status;
+    notes.push(`Status changed to ${update.status}.`);
+  }
+  if (update.isRead !== undefined) {
+    patch.is_read = update.isRead;
+    notes.push(`Marked ${update.isRead ? "read" : "unread"}.`);
+  }
+
   const { data, error } = await supabase
     .from("leads")
-    .update({ status, updated_at: new Date().toISOString() })
+    .update(patch)
     .eq("id", id)
     .select("*")
     .single();
 
   if (error) throw databaseError(error);
-  await addLeadEvent(config, id, "status_changed", `Status changed to ${status}.`);
+  for (const note of notes) await addLeadEvent(config, id, "updated", note);
   return data;
 }
 

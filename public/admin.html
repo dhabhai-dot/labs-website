@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -34,7 +34,7 @@
           <article><span>Total Leads</span><strong id="totalLeads">0</strong></article>
           <article><span>Today's Leads</span><strong id="todayLeads">0</strong></article>
           <article><span>This Month</span><strong id="monthLeads">0</strong></article>
-          <article><span>Closed</span><strong id="closedLeads">0</strong></article>
+          <article><span>Unread</span><strong id="unreadLeads">0</strong></article>
         </section>
 
         <section class="toolbar">
@@ -42,6 +42,7 @@
           <input id="fromDate" type="date" />
           <input id="toDate" type="date" />
           <select id="statusFilter"><option value="">All statuses</option><option value="new">New</option><option value="contacted">Contacted</option><option value="closed">Closed</option></select>
+          <select id="readFilter"><option value="">Read status</option><option value="false">Unread</option><option value="true">Read</option></select>
           <button id="filterButton" type="button">Apply</button>
           <a id="csvExport" class="export" href="/api/admin/export.csv">CSV</a>
           <a id="excelExport" class="export" href="/api/admin/export.xlsx">Excel</a>
@@ -49,7 +50,7 @@
 
         <section class="table-wrap">
           <table>
-            <thead><tr><th>Lead</th><th>Service</th><th>Message</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Lead</th><th>Service</th><th>Message</th><th>Submitted</th><th>Read</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="leadRows"></tbody>
           </table>
         </section>
